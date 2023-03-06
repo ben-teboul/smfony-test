@@ -1,0 +1,64 @@
+version: '3.9'
+
+networks:
+  test:
+
+services:
+  server:
+    build:
+      context: docker
+      dockerfile: ./server/Dockerfile
+    container_name: 'test-server'
+    ports:
+      - '9000:80'
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./docker/server/apache/sites-enabled:/etc/apache2/sites-enabled
+      - ./docker/server/php/php.ini:/usr/local/etc/php/conf.d/extra-php-config.ini
+    depends_on:
+      db_server:
+        condition: service_healthy
+    networks:
+      - test
+
+  db_server:
+    image: mariadb:10.5.9
+    container_name: 'test-db'
+    restart: always
+    ports:
+      - '3308:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'test_user'
+      MYSQL_PASSWORD: 'test_pass'
+      MYSQL_DATABASE: 'test_db'
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/db/mariadb/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=root
+      interval: 5s
+      retries: 5
+    networks:
+      - test
+
+  db_admin:
+    image: phpmyadmin/phpmyadmin:5
+    container_name: 'test-db-admin'
+    ports:
+      - '9001:80'
+    environment:
+      PMA_HOST: db_server
+      UPLOAD_LIMIT: 300M
+    depends_on:
+      db_server:
+        condition: service_healthy
+    volumes:
+      - db_admin_data:/var/www/html
+    networks:
+      - test
+
+volumes:
+  db_data:
+  db_admin_data:
