@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 RUN a2enmod rewrite
 
@@ -11,5 +11,5 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 
 RUN install-php-extensions gd pdo_mysql bcmath zip intl opcache soap xsl
 
-COPY --from=composer:2.0 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.4.4 /usr/bin/composer /usr/local/bin/composer
 
