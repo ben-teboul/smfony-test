@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Security;
 
 use App\Entity\User;
@@ -22,7 +23,11 @@ class GoogleAuthenticator extends OAuth2Authenticator
     private EntityManagerInterface $entityManager;
     private RouterInterface $router;
 
-    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $entityManager, RouterInterface $router)
+    public function __construct(
+        ClientRegistry         $clientRegistry,
+        EntityManagerInterface $entityManager,
+        RouterInterface        $router
+    )
     {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
@@ -48,7 +53,9 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $email = $googleUser->getEmail();
 
                 // have they logged in with Google before? Easy!
-                $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
+                $existingUser = $this->entityManager
+                    ->getRepository(User::class)
+                    ->findOneBy(['googleId' => $googleUser->getId()]);
 
                 //User doesnt exist, we create it !
                 if (!$existingUser) {
@@ -68,13 +75,9 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // change "app_dashboard" to some route in your app
         return new RedirectResponse(
-            $this->router->generate('app_index')
+            $this->router->generate('app_picture_of_day')
         );
-
-        // or, on success, let the request continue to be handled by the controller
-        //return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
@@ -84,14 +87,4 @@ class GoogleAuthenticator extends OAuth2Authenticator
         return new Response($message, Response::HTTP_FORBIDDEN);
     }
 
-//    public function start(Request $request, AuthenticationException $authException = null): Response
-//    {
-//        /*
-//         * If you would like this class to control what happens when an anonymous user accesses a
-//         * protected page (e.g. redirect to /login), uncomment this method and make this class
-//         * implement Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface.
-//         *
-//         * For more details, see https://symfony.com/doc/current/security/experimental_authenticators.html#configuring-the-authentication-entry-point
-//         */
-//    }
 }
