@@ -48,6 +48,10 @@ class GetPictureOfDayCommand extends Command
         if ($pictureCheck) {
             $output->writeln('Picture already exists');
         } else {
+            if($data['media_type'] !== 'image') {
+                $output->writeln('Picture is not an image');
+                return Command::SUCCESS;
+            }
             $picture = (new Pictures())
                 ->setTitle($data['title'])
                 ->setUrl($data['url'])

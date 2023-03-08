@@ -46,3 +46,31 @@ When you finish this challenge, send a link to your repository by email.
 The only constraint is to use PHP (use the version you want) and this Symfony project. You will then use any library you want, any database you want.
 
 And most of all, have fun!
+
+# Compte Rendu
+
+## Installation
+### Lancement des containers docker 
+> docker-compose up -d
+### Installation des dépendances
+> docker-compose exec server composer install
+### Mise à jour de la base de données
+> docker-compose exec server php bin/console doctrine:migrations:migrate
+### Avant le lancement de l'application
+- Vous devez saisir votre clé API google dans le fichier .env
+- La clé "DEMO_KEY" est utilisé dans le projet pour l'api de la NASA
+- Lancer la commande pour récupérer la photo du jour
+>docker-compose exec server php bin/console app:get:picture-of-day
+- Vous pouvez dès à présent accéder à l'application
+### Lancement de l'application
+> http://localhost:9000
+
+
+Explication: 
+
+J'ai utilisé le bundle "knpuniversity/oauth2-client-bundle" pour l'authentification avec Google.<br/>
+J'ai créé un système d'authentification personnalisé pour pouvoir gérer la connexion avec Google (enregistrement en base de données et vérification de l'utilisateur).<br/>
+J'ai ensuite renseigné cette authenticator dans le fichier services.yaml.<br/>
+J'ai ensuite créé un contrôleur pour permettre la connexion avec Google.<br/>
+J'ai ensuite créé une commande pour faire une requête HTTP pour récupérer l'image du jour de la NASA et l'enregistrer en base de données tout en vérifiant si l'image n'est pas déjà en base de données et si le type de document est bien une image.<br/>
+Pour finir, j'ai créé une vue et un contrôleur permettant de récupérer l'image la plus récente de notre base de données et de l'afficher avec son titre et son explication.<br/>

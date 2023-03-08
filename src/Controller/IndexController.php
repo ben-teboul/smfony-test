@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
+    #[Route('/', name: 'app_index')]
     #[Route('/picture-of-day', name: 'app_picture_of_day')]
     public function index(PicturesRepository $picturesRepository): Response
     {
